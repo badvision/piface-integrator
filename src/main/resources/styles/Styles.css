@@ -1,0 +1,130 @@
+.root {
+    -fx-font-size: 30px;
+    -fx-font-family: "LCARSGTJ3";
+    -fx-background-color: black;
+}
+
+.label {
+    -fx-padding:0px 2px 0px 0px;
+}
+
+.message-indicator {
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 20;
+    -fx-text-fill: #000000;
+    -fx-font-size:30px;
+    -fx-alignment: center;
+    -fx-padding: 0px 8px 0px 8px;
+}
+
+.system-error-message {
+    -fx-background-color: #000000;
+    -fx-text-fill: #ff0000;
+    -fx-font-size:60px;
+    -fx-border-color:#ff0000;
+    -fx-border-width:5px;
+    -fx-padding:0px 10px 0px 10px;
+}
+
+.system-active {
+    -fx-background-color:  #3366CC;
+}
+.system-inactive {
+    -fx-background-color:  #808080;
+}
+.system-error {
+    -fx-background-color:  #ff0000;
+}
+.system-scanning {
+    -fx-background-color:  #FFFF99;
+}
+
+.status-indicator1 .arc {
+    -fx-fill: #99CCFF;
+}
+
+.status-indicator1 .status-label {
+    -fx-background-color: #99CCFF;
+}
+
+.status-indicator2 .arc {
+    -fx-fill: #CC99CC;
+}
+
+.status-indicator2 .status-label {
+    -fx-background-color: #CC99CC;
+}
+
+.status-indicator3 .arc {
+    -fx-fill: #FFFFB9;
+}
+
+.status-indicator3 .status-label {
+    -fx-background-color: #FFFFB9;
+}
+
+.status-indicator1 .status-label, 
+.status-indicator2 .status-label, 
+.status-indicator3 .status-label {
+    -fx-font-size: 24px;    
+}
+
+.status-value {
+    -fx-text-fill: #FFCC00;
+    -fx-font-size: 30px;
+}
+
+.value-slider {
+    -fx-border-color: #ffffff;
+    -fx-border-radius: 4px;
+}
+
+.slider-label {
+    -fx-text-fill: #FF9900;
+    -fx-font-size: 30px;
+    -fx-padding: 0px 0px 0px 0px;
+}
+
+.value-slider .axis-labels .label {
+    -fx-padding:15px 0px -11px 0px;
+    -fx-background-color: black;
+    -fx-background-insets: 10px 0px 0px 0px;
+}
+
+.value-slider .axis-labels .label .text {
+    -fx-fill: #ffffff;
+    -fx-stroke: black;
+    -fx-stroke-width: 0.5px;
+    -fx-font-size: 18px;
+}
+
+.value-slider .tick-minor,
+.value-slider .tick-major {
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: white;
+}
+
+.value-slider .tick-minor {
+    -fx-padding: 4px 0px 0px 0px;
+}
+
+.value-slider .tick-minor-last {
+    -fx-border-width: 0px;
+    -fx-padding: 4px 0px 0px 0px;
+}
+
+.value-slider .tick-major {
+    -fx-padding: 24px 0px 0px 0px;
+}
+
+.value-slider .gradient1 {
+     -fx-background-color: linear-gradient(rgba(200,200,255,0.9) 0%, rgba(128,128,255,0.4) 100%)
+}
+
+.value-slider .gradient2 {
+     -fx-background-color: linear-gradient(rgba(255,255,200,0.9) 0%, rgba(200,200,0,0.3) 100%)
+}
+
+.value-slider .gradient3 {
+     -fx-background-color: linear-gradient(rgba(255,200,255,0.9) 0%, rgba(200,0,0,0.2) 100%)
+}

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="valueSlider" minHeight="146.0" minWidth="48.0" styleClass="root" stylesheets="@/styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.badvision.pifaceintegrator.ui.ScaleController">
+    <children>
+        <StackPane styleClass="value-slider" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" StackPane.alignment="TOP_LEFT">
+                    <children>
+                        <VBox HBox.hgrow="ALWAYS">
+                            <children>
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin></Pane>
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor-last" VBox.vgrow="NEVER" />
+                            </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS">
+                            <children>
+                                <Pane styleClass="tick-major" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-major" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-major" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-major" VBox.vgrow="NEVER" />
+                            </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS">
+                            <children>
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor" VBox.vgrow="NEVER" />
+                                <Pane styleClass="tick-minor-last" VBox.vgrow="NEVER" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            <VBox alignment="TOP_CENTER" styleClass="axis-labels">
+               <children>
+                  <Label text="80" />
+                  <Label text="60" />
+                  <Label text="40" />
+                  <Label text="20" />
+               </children>
+            </VBox>
+            <AnchorPane>
+               <children>
+                  <Pane fx:id="gradient" prefWidth="52.0" styleClass="gradient1" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
+            </children>
+        </StackPane>
+      <Label fx:id="nameLabel" alignment="TOP_CENTER" contentDisplay="TOP" minHeight="-Infinity" prefHeight="30.0" styleClass="slider-label" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></Label>
+    </children>
+</AnchorPane>

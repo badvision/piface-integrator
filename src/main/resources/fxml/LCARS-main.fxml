@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.badvision.pifaceintegrator.ui.MainController">
+    <children>
+        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="510.0" prefWidth="600.0" styleClass="root">
+            <children>
+                <VBox prefHeight="200.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <HBox maxWidth="1.7976931348623157E308" prefHeight="80.0" spacing="9.0" VBox.vgrow="NEVER">
+                            <children>
+                                <Label alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="80.0" prefWidth="64.0" style="-fx-background-color: #ffffb9;" text="LCARS-314" HBox.hgrow="SOMETIMES" />
+                                <Label fx:id="meshLabel" alignment="BOTTOM_RIGHT" prefHeight="80.0" prefWidth="88.0" styleClass="system-inactive" text="MESH-01" HBox.hgrow="NEVER" />
+                                <Label alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" minWidth="20.0" prefHeight="80.0" style="-fx-background-color: #ffcc88;" HBox.hgrow="SOMETIMES">
+                                    <HBox.margin>
+                                        <Insets right="-1.0" />
+                                    </HBox.margin>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <AnchorPane VBox.vgrow="ALWAYS">
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                            <children>
+                                <Rectangle fill="#ffcc88" height="20.0" smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                <Arc length="90.0" radiusX="20.0" radiusY="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" type="ROUND" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                <FlowPane fx:id="meshActivity" hgap="4.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="272.0" prefWidth="200.0" vgap="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="7.0">
+                                    <padding>
+                                        <Insets right="4.0" />
+                                    </padding>
+                                </FlowPane>
+                                <FlowPane fx:id="meshNotifications" hgap="4.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="107.0" prefWidth="196.0" vgap="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                    <padding>
+                                        <Insets right="4.0" />
+                                    </padding>
+                                </FlowPane>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </VBox>
+                <AnchorPane maxHeight="1.7976931348623157E308" style="-fx-background-color: #ffcc88;">
+                    <children>
+                        <Rectangle height="40.0" smooth="false" stroke="BLACK" strokeMiterLimit="0.0" strokeType="INSIDE" strokeWidth="0.0" width="40.0" AnchorPane.bottomAnchor="460.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Arc fill="#ffcc88" layoutY="41.0" length="90.0" radiusX="40.0" radiusY="40.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" type="ROUND" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+                    <HBox.margin>
+                        <Insets right="8.0" />
+                    </HBox.margin>
+                </AnchorPane>
+                <AnchorPane maxHeight="1.7976931348623157E308" style="-fx-background-color: #ffcc88;">
+                    <children>
+                        <Rectangle height="40.0" smooth="false" stroke="BLACK" strokeMiterLimit="0.0" strokeType="INSIDE" strokeWidth="0.0" width="40.0" AnchorPane.bottomAnchor="460.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Arc fill="#ffcc88" layoutY="41.0" length="90.0" radiusX="40.0" radiusY="40.0" startAngle="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" type="ROUND" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+                </AnchorPane>
+                <VBox HBox.hgrow="ALWAYS">
+                    <children>
+                        <HBox maxWidth="1.7976931348623157E308" prefHeight="80.0" spacing="9.0" VBox.vgrow="NEVER">
+                            <children>
+                                <Label alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" minWidth="20.0" prefHeight="80.0" style="-fx-background-color: #ffcc88;" HBox.hgrow="ALWAYS" />
+                                <Label fx:id="pifaceLabel" alignment="BOTTOM_RIGHT" prefHeight="80.0" prefWidth="88.0" styleClass="system-inactive" text="PIFC-1" HBox.hgrow="NEVER" />
+                                <Label alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="80.0" prefWidth="54.0" style="-fx-background-color: #ffcc88;" text="IG-8" HBox.hgrow="SOMETIMES" />
+                            </children>
+                        </HBox>
+                        <AnchorPane prefHeight="420.0" prefWidth="207.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Rectangle fill="#ffcc88" height="20.0" smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                <Arc length="90.0" radiusX="20.0" radiusY="20.0" startAngle="90.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" type="ROUND" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                <FlowPane fx:id="pifaceActivity" hgap="4.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="7.0">
+                                    <padding>
+                                        <Insets left="4.0" />
+                                    </padding>
+                                </FlowPane>
+                                <FlowPane fx:id="pifaceNotifications" hgap="4.0" maxHeight="1.7976931348623157E308" prefHeight="107.0" vgap="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                    <padding>
+                                        <Insets left="4.0" />
+                                    </padding>
+                                </FlowPane>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </VBox>
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+        </HBox>
+    </children>
+</StackPane>
