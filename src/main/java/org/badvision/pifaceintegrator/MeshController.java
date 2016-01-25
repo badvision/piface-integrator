@@ -33,14 +33,13 @@ public class MeshController extends RemoteSensor {
     private final ScratchInstance scratch;
 
     private MeshController() {
-        scratch = null;
         // Must initalize with host/port
+        scratch = null;
     }
 
     public MeshController(String host, int port) throws IOException {
         super(host, port);
         scratch = new ScratchInstance(host, port);
-        scratch.connect();
     }
 
     public void disable() {
@@ -72,13 +71,19 @@ public class MeshController extends RemoteSensor {
     private void reconnect() {
         if (enabledProperty.get()) {
             try {
+                try {
+                    scratch.disconnect();
+                } catch (Throwable t) {
+                    // Ignore disconnection errors
+                }
                 halt();
                 ui.setMeshStatus(SystemStatus.error);
                 allIntVariables.clear();
                 allStringVariables.clear();
                 ui.clearMeshVariables();
                 connect();
-            } catch (InterruptedException ex) {
+                scratch.connect();
+            } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(MeshController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

@@ -2,14 +2,10 @@ package org.badvision.pifaceintegrator.piface;
 
 import com.pi4j.device.piface.PiFace;
 import com.pi4j.device.piface.impl.PiFaceDevice;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinMode;
-import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.spi.SpiChannel;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -17,6 +13,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implements a local connection to a PiFace physically wired to this host.
@@ -25,7 +23,8 @@ import java.util.function.Consumer;
  */
 public class LocalConnection implements PifaceConnection {
 
-    // PWM pulses are at 100 microseconds
+    static final Logger log = Logger.getLogger(LocalConnection.class.getName());
+    // PWM pulses are at 50 microseconds, more or less
     public static final long PWM_UNIT = 50;
     PiFaceDevice device;
     private final Map<Integer, Integer> pwmValues;
@@ -117,6 +116,7 @@ public class LocalConnection implements PifaceConnection {
 
     private void enablePWMMode() {
         if (executorService == null || executorService.isShutdown()) {
+            log.info("Starting PWM thread");
             executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.scheduleAtFixedRate(this::processPwm, 0, PWM_UNIT, TimeUnit.MICROSECONDS);
         }
@@ -129,11 +129,12 @@ public class LocalConnection implements PifaceConnection {
             int counter = pwmCounter.updateAndGet(val -> {return val < PWM_RANGE ? val + 1 : 0;});
             pwmValues.entrySet().forEach(entry -> _setOutputState(entry.getKey(), entry.getValue() >= counter));
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.log(Level.WARNING, "Error in PWM thread", t);
         }
     }
 
     private void disablePWMMode() {
+        log.info("Shutting down PWM thread");
         pwmValues.clear();
         executorService.shutdownNow();
         executorService = null;

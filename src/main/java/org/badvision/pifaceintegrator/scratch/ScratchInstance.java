@@ -6,9 +6,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Scratch 1.4 instance to which broadcast messages and sensor
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ScratchInstance {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScratchInstance.class);
+    private static final Logger LOG = Logger.getLogger(ScratchInstance.class.getName());
 
     /**
      * The host Scratch is listening on for remote sensor connections.
@@ -101,7 +101,7 @@ public class ScratchInstance {
         byte[] messageSize = ByteBuffer.allocate(4).putInt(broadcastMessage.length()).array();
         outputStream.write(messageSize);
         outputStream.write(broadcastMessage.getBytes(Charset.forName("UTF-8")));
-        LOG.info("Sent broadcast message '{}' to Scratch.", message);
+        LOG.log(Level.INFO, "Sent broadcast message '{0}' to Scratch.", message);
     }
 
     /**
@@ -145,7 +145,7 @@ public class ScratchInstance {
         byte[] messageSize = ByteBuffer.allocate(4).putInt(sensorUpdateMessage.length()).array();
         outputStream.write(messageSize);
         outputStream.write(sensorUpdateMessage.getBytes(Charset.forName("UTF-8")));
-        LOG.info("Sent sensor update '{}' to Scratch.", sensorUpdateMessage);
+        LOG.log(Level.INFO, "Sent sensor update '{0}' to Scratch.", sensorUpdateMessage);
     }
 
     public String getScratchHost() {

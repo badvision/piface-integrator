@@ -26,7 +26,7 @@ import org.badvision.pifaceintegrator.scratch.Constants;
  */
 public class Launcher {
 
-    static Logger log = Logger.getLogger(Launcher.class.getName());
+    static final Logger log = Logger.getLogger(Launcher.class.getName());
 
     public static void main(String... args) throws IOException {
         OptionParser parser = new OptionParser("m:p:r:h?");
@@ -109,7 +109,7 @@ public class Launcher {
                 host = parts[0];
                 port = Integer.parseInt(parts[1]);
             }
-            System.out.println("using client connection to "+host+", port "+port);
+            log.log(Level.INFO, "using client connection to {0}, port {1}", new Object[]{host, port});
             return Optional.of(new RestClient(host, port));
         } else {
             return Optional.empty();
@@ -118,7 +118,7 @@ public class Launcher {
 
     private static Optional<PifaceConnection> buildMockPifaceConnection(OptionSet options) {
         if (options.has("mock")) {
-            System.out.println("using mock");
+            log.info("using mock piface controller");
            return Optional.of(new MockConnection());
         } else {
             return Optional.empty();
@@ -131,7 +131,7 @@ public class Launcher {
             if (options.hasArgument("p")) {
                 port = (Integer) options.valueOf("p");
             }
-            System.out.println("hosting on port "+port);
+            log.log(Level.INFO, "hosting on port {0}", port);
             return Optional.of(new RestServer(port, piface));
         } else {
             return Optional.empty();
@@ -147,7 +147,7 @@ public class Launcher {
                 host = parts[0];
                 port = Integer.parseInt(parts[1]);
             }
-            System.out.println("using scratch mesh connection to "+host+", port "+port);
+            log.log(Level.INFO, "using scratch mesh connection to {0}, port {1}", new Object[]{host, port});
             return Optional.of(new MeshController(host, port));
         } else {
             return Optional.empty();

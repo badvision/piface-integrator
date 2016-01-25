@@ -168,7 +168,7 @@ public class RestClient implements PifaceConnection {
             InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
             return gson.fromJson(reader, RestResponse.class);
         } catch (Throwable t) {
-            throw  new IOException("Unable to parse result", t);
+            throw new IOException("Unable to parse result", t);
         }
     }
 
@@ -178,14 +178,15 @@ public class RestClient implements PifaceConnection {
             InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
             JsonObject result = gson.fromJson(reader, JsonObject.class);
             JsonArray list = result.get("response").getAsJsonArray();
-            
-            Type collectionType = new TypeToken<Collection<RestResponse>>(){}.getType();
+
+            Type collectionType = new TypeToken<Collection<RestResponse>>() {
+            }.getType();
             return gson.fromJson(list, collectionType);
         } catch (Throwable t) {
-            throw  new IOException("Unable to parse result", t);
+            throw new IOException("Unable to parse result", t);
         }
     }
-    
+
     ScheduledExecutorService scheduler;
 
     private void setupPollingLoop() {
@@ -203,8 +204,9 @@ public class RestClient implements PifaceConnection {
         }
         return listeners.get(pin);
     }
-    
+
     boolean[] inputState = new boolean[8];
+
     private void pollInputs() {
         try {
             URI uri = generateUri(RestServer.GET_INPUTS);
@@ -212,16 +214,16 @@ public class RestClient implements PifaceConnection {
             if (restResponse != null) {
                 restResponse.forEach(this::evaluateInputStateChange);
             }
-            
+
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     private void evaluateInputStateChange(RestResponse pinStatus) {
         if (pinStatus.getState() != inputState[pinStatus.getPin()]) {
-            getListenersForPin(pinStatus.getPin()).forEach(listener->{
+            getListenersForPin(pinStatus.getPin()).forEach(listener -> {
                 listener.accept(pinStatus.getState());
             });
         }

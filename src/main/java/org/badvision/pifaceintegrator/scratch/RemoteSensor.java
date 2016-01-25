@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.concurrent.locks.LockSupport;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a remote sensor of the Scratch 1.4 programming environment which
@@ -23,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RemoteSensor implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteSensor.class);
+    private static final Logger LOG = Logger.getLogger(RemoteSensor.class.getName());
 
     /**
      * Possible states of the internal state machine
@@ -76,7 +74,7 @@ public abstract class RemoteSensor implements Runnable {
     }
 
     protected void halt() throws InterruptedException {
-        halted = true;
+        halted = true;        
         if (connectionManager != null && connectionManager.isAlive()) {
             connectionManager.interrupt();
             connectionManager.join();
@@ -123,7 +121,7 @@ public abstract class RemoteSensor implements Runnable {
             connectionStateChange(false, null);
         } catch (IOException e) {
             connectionStateChange(false, e);
-            LOG.error("Error while communicating to Scratch", e);
+            LOG.log(Level.SEVERE, "Error while communicating to Scratch", e);
         }
     }
 
