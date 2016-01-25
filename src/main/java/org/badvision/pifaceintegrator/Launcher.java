@@ -30,9 +30,9 @@ public class Launcher {
 
     public static void main(String... args) throws IOException {
         OptionParser parser = new OptionParser("m:p:r:h?");
-        parser.accepts("m", "mesh host:port, implies --mesh");
-        parser.accepts("r", "remote piface server host:port, implies --client");
-        parser.accepts("p", "server port, implies --server");
+        parser.accepts("m", "mesh host:port, implies --mesh").withRequiredArg().ofType(String.class);
+        parser.accepts("r", "remote piface server host:port, implies --client").withRequiredArg().ofType(String.class);
+        parser.accepts("p", "server port, implies --server").withRequiredArg().ofType(Integer.class);
         parser.acceptsAll(Arrays.asList(new String[]{"?", "h"}), "Show help (this message)");
         parser.accepts("gui", "Operate in GUI mode (default)");
         parser.accepts("text", "Operate in Text mode");
@@ -89,7 +89,7 @@ public class Launcher {
     private static PifaceConnection buildPifaceConnection(OptionSet options) throws IOException {
         // First determine if this is local, client or mock
         PifaceConnection piface = buildClientPifaceConnection(options).orElse(
-                buildMockPifaceConnection(options).get());
+                buildMockPifaceConnection(options).orElse(null));
         if (piface == null) {
             return buildLocalPifaceConnection(options);
         }
@@ -109,6 +109,7 @@ public class Launcher {
                 host = parts[0];
                 port = Integer.parseInt(parts[1]);
             }
+            System.out.println("using client connection to "+host+", port "+port);
             return Optional.of(new RestClient(host, port));
         } else {
             return Optional.empty();
@@ -116,7 +117,6 @@ public class Launcher {
     }
 
     private static Optional<PifaceConnection> buildMockPifaceConnection(OptionSet options) {
-        System.out.println("hasMock?");
         if (options.has("mock")) {
             System.out.println("using mock");
            return Optional.of(new MockConnection());
@@ -128,10 +128,10 @@ public class Launcher {
     private static Optional<RestServer> buildServerConnection(OptionSet options, PifaceConnection piface) throws IOException {
         if (options.has("server") || options.hasArgument("p")) {
             int port = RestServer.DEFAULT_PORT;
-            if (options.hasArgument("0")) {
-                String portStr = String.valueOf(options.valueOf("p"));
-                port = Integer.parseInt(portStr);
+            if (options.hasArgument("p")) {
+                port = (Integer) options.valueOf("p");
             }
+            System.out.println("hosting on port "+port);
             return Optional.of(new RestServer(port, piface));
         } else {
             return Optional.empty();
@@ -147,6 +147,7 @@ public class Launcher {
                 host = parts[0];
                 port = Integer.parseInt(parts[1]);
             }
+            System.out.println("using scratch mesh connection to "+host+", port "+port);
             return Optional.of(new MeshController(host, port));
         } else {
             return Optional.empty();

@@ -96,7 +96,7 @@ public class RestServer {
             int pinNumber = getRequiredInt(params, PARAM_PIN);
             output.put(PARAM_PIN, pinNumber);
             try {
-                output.put(PARAM_PIN, device.getInputState(pinNumber));
+                output.put(PARAM_STATE, device.getInputState(pinNumber));
             } catch (IOException ex) {
                 throw new RuntimeException(ex.getMessage(), ex);
             }
@@ -143,7 +143,6 @@ public class RestServer {
             }
             output.put(PARAM_PIN, pinNumber);
             output.put(PARAM_VALUE, val);
-
         });
     }
 

@@ -2,12 +2,16 @@ package org.badvision.pifaceintegrator.piface;
 
 import com.pi4j.device.piface.PiFace;
 import com.pi4j.device.piface.impl.PiFaceDevice;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinMode;
+import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.spi.SpiChannel;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +26,13 @@ import java.util.function.Consumer;
 public class LocalConnection implements PifaceConnection {
 
     // PWM pulses are at 100 microseconds
-    public static final long PWM_UNIT = 100;
+    public static final long PWM_UNIT = 50;
     PiFaceDevice device;
+    private final Map<Integer, Integer> pwmValues;
 
     public LocalConnection() throws IOException {
         device = new PiFaceDevice(PiFace.DEFAULT_ADDRESS, SpiChannel.CS0);
-        pwmValues = new HashMap<>();
+        pwmValues = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -38,14 +43,14 @@ public class LocalConnection implements PifaceConnection {
     @Override
     public boolean getInputState(int inputPin) throws IOException {
         validateRange(inputPin);
-        return device.getInputPin(inputPin).isHigh();
+        return device.getInputPin(inputPin).isLow();
     }
 
     @Override
     public void addListener(int inputPin, Consumer<Boolean> listener) throws IOException {
         validateRange(inputPin);
         device.getInputPin(inputPin).addListener((GpioPinListenerDigital) (GpioPinDigitalStateChangeEvent event)
-                -> listener.accept(event.getState().isHigh())
+                -> listener.accept(event.getState().isLow())
         );
     }
 
@@ -63,7 +68,13 @@ public class LocalConnection implements PifaceConnection {
     @Override
     public void setOutputPWM(int pin, int value) throws IOException {
         validateRange(pin);
-        setPwmValue(pin, value);
+        if (value <= 0) {
+            setOutputState(pin, false);
+        } else if (value >= 100) {
+            setOutputState(pin, true);
+        } else {
+            setPwmValue(pin, value);
+        }
     }
 
     @Override
@@ -75,8 +86,6 @@ public class LocalConnection implements PifaceConnection {
             return device.getOutputPin(pin).getState().isHigh() ? PWM_RANGE : 0;
         }
     }
-
-    private final Map<Integer, Integer> pwmValues;
 
     private boolean isPwmActive() {
         return !pwmValues.isEmpty() && executorService != null && !executorService.isShutdown();
@@ -91,7 +100,7 @@ public class LocalConnection implements PifaceConnection {
 
     private void disablePwm(int pin) {
         pwmValues.remove(pin);
-        if (isPwmActive()) {
+        if (pwmValues.isEmpty()) {
             disablePWMMode();
         }
     }
@@ -107,7 +116,7 @@ public class LocalConnection implements PifaceConnection {
     ScheduledExecutorService executorService;
 
     private void enablePWMMode() {
-        if (executorService != null || executorService.isShutdown()) {
+        if (executorService == null || executorService.isShutdown()) {
             executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.scheduleAtFixedRate(this::processPwm, 0, PWM_UNIT, TimeUnit.MICROSECONDS);
         }
@@ -116,8 +125,12 @@ public class LocalConnection implements PifaceConnection {
     AtomicInteger pwmCounter = new AtomicInteger(0);
 
     private void processPwm() {
-        int counter = pwmCounter.updateAndGet(val -> (val + 1) < PWM_RANGE ? val + 1 : 0);
-        pwmValues.entrySet().forEach(entry -> _setOutputState(entry.getKey(), entry.getValue() < counter));
+        try {
+            int counter = pwmCounter.updateAndGet(val -> {return val < PWM_RANGE ? val + 1 : 0;});
+            pwmValues.entrySet().forEach(entry -> _setOutputState(entry.getKey(), entry.getValue() >= counter));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private void disablePWMMode() {

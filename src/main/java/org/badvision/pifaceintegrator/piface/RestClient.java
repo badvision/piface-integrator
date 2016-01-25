@@ -67,8 +67,9 @@ public class RestClient implements PifaceConnection {
     @Override
     public boolean isConnected() {
         try {
-            getInputState(1);
-            return true;
+            URI uri = generateUri(RestServer.GET_INPUTS);
+            Collection<RestResponse> restResponse = getRestResponseList(uri);
+            return restResponse != null;
         } catch (Throwable t) {
             return false;
         }
