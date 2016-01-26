@@ -171,7 +171,7 @@ public class MainController implements UserInterface {
         redOverlay.setBlendMode(BlendMode.MULTIPLY);
         root.getChildren().add(redOverlay);
         root.getChildren().add(redAlert);
-        shutdownListeners.forEach(Runnable::run);
+        shutdownListeners.stream().map(Thread::new).forEach(Thread::start);
     }
     
     List<Runnable> shutdownListeners = new ArrayList<>();
