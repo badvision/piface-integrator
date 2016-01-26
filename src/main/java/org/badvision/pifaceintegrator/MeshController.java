@@ -92,6 +92,36 @@ public class MeshController extends RemoteSensor {
     @Override
     protected void broadcast(String message) {
         ui.showMeshBroadcast(message);
+        String msg = message.toLowerCase().replaceAll("\\s", "");
+        int even = -1;
+        int odd = -1;
+        switch (msg) {
+            case "allstop":
+                even = 0;
+                odd = 0;
+                break;
+            case "engage":
+                even = 100;
+                odd = 0;
+                break;
+            case "impulse":
+                even = 20;
+                odd = 0;
+                break;
+            case "reverse":
+                even = 0;
+                odd = 20;
+                break;
+            case "borg":
+                even = 0;
+                odd = 100;
+        }
+        if (even >= 0) {
+            for (int i=0; i < 8; i+=2) {
+                updateSensorIntValue("pwm"+i, even);
+                updateSensorIntValue("pwm"+(i+1), odd);
+            }
+        }
     }
 
     @Override
