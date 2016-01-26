@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +37,8 @@ import org.badvision.pifaceintegrator.piface.RestServer.RestResponse;
 public class RestClient implements PifaceConnection {
 
     PoolingHttpClientConnectionManager connectionManager;
-    public static final int MAX_CONNECTIONS = 4;
+    public static final int MAX_CONNECTIONS = 9;
     public static final int POLLING_FREQUENCY = 500;
-    private CloseableHttpClient client;
     Gson gson = new Gson();
     String host;
     int port;
@@ -57,11 +57,6 @@ public class RestClient implements PifaceConnection {
         connectionManager.setMaxTotal(MAX_CONNECTIONS);
         this.host = host;
         this.port = port;
-        client = HttpClients.custom()
-                .setConnectionManager(connectionManager)
-                .setConnectionManagerShared(true)
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .build();
     }
 
     @Override
@@ -75,7 +70,7 @@ public class RestClient implements PifaceConnection {
         }
     }
 
-    Map<Integer, List<Consumer<Boolean>>> listeners = new HashMap<>();
+    Map<Integer, List<Consumer<Boolean>>> listeners = new ConcurrentHashMap<>();
 
     @Override
     public void addListener(int pin, Consumer<Boolean> listener) throws IOException {
@@ -162,29 +157,65 @@ public class RestClient implements PifaceConnection {
         return new URI("http://" + host + ":" + port + path + "?" + builder.toString());
     }
 
+    private CloseableHttpClient getClient() {
+        return HttpClients.custom()
+                .setConnectionManager(connectionManager)
+                .setConnectionManagerShared(true)
+                .build();
+    }
+    
     private RestResponse getRestResponse(URI uri) throws IOException {
-        HttpGet request = new HttpGet(uri);
-        try (CloseableHttpResponse response = client.execute(request)) {
-            InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-            return gson.fromJson(reader, RestResponse.class);
-        } catch (Throwable t) {
-            throw new IOException("Unable to parse result", t);
+        int retries = 3;
+        RestResponse restResponse = null;
+        while (restResponse == null && retries > 0) {
+            HttpGet request = new HttpGet(uri);
+            try (CloseableHttpResponse response = getClient().execute(request)) {
+                InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+                restResponse = gson.fromJson(reader, RestResponse.class);
+            } catch (Throwable t) {
+                retries--;
+                if (retries > 0) {
+                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error trying to communicate with server: {0}", t.getMessage());
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        throw new IOException("Interrupted during retry sequence", t);
+                    }
+                } else {
+                    throw new IOException("Unable to parse result", t);
+                }
+            }
         }
+        return restResponse;
     }
 
     private Collection<RestResponse> getRestResponseList(URI uri) throws IOException {
-        HttpGet request = new HttpGet(uri);
-        try (CloseableHttpResponse response = client.execute(request)) {
-            InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-            JsonObject result = gson.fromJson(reader, JsonObject.class);
-            JsonArray list = result.get("response").getAsJsonArray();
+        int retries = 3;
+        Collection<RestResponse> restResponse = null;
+        while (restResponse == null && retries > 0) {
+            HttpGet request = new HttpGet(uri);
+            try (CloseableHttpResponse response = getClient().execute(request)) {
+                InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+                JsonObject result = gson.fromJson(reader, JsonObject.class);
+                JsonArray list = result.get("response").getAsJsonArray();
 
-            Type collectionType = new TypeToken<Collection<RestResponse>>() {
-            }.getType();
-            return gson.fromJson(list, collectionType);
-        } catch (Throwable t) {
-            throw new IOException("Unable to parse result", t);
+                Type collectionType = new TypeToken<Collection<RestResponse>>() {}.getType();
+                restResponse = gson.fromJson(list, collectionType);
+            } catch (Throwable t) {
+                retries--;
+                if (retries > 0) {
+                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error trying to communicate with server: {0}", t.getMessage());
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        throw new IOException("Interrupted during retry sequence", t);
+                    }
+                } else {
+                    throw new IOException("Unable to parse result", t);
+                }
+            }
         }
+        return restResponse;
     }
 
     ScheduledExecutorService scheduler;
