@@ -133,6 +133,25 @@ public class RestServer {
     }
 
     void handleSetOutputPwmRequest(HttpRequest request, HttpResponse response, HttpContext context) throws UnsupportedEncodingException {
+        handleListRequest(request, response, (params, output) -> {
+            try {
+                for (int i = 0; i < 8; i++) {
+                    int val = getInt(params, PARAM_PIN + i, -1);
+                    if (val >= 0) {
+                        device.setOutputPWM(i, val);
+                        RestResponse pin = new RestResponse();
+                        pin.setPin(i);
+                        pin.setValue(val);
+                        output.add(pin);
+                    }
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            }
+        });
+    }
+
+    void handleSetSingleOutputPwmRequest(HttpRequest request, HttpResponse response, HttpContext context) throws UnsupportedEncodingException {
         handleRequest(request, response, (params, output) -> {
             int pinNumber = getRequiredInt(params, PARAM_PIN);
             int val = getRequiredInt(params, PARAM_VALUE);
@@ -165,7 +184,7 @@ public class RestServer {
             outputError(response, ex);
         }
     }
-    
+
     private void handleListRequest(HttpRequest request, HttpResponse response, BiConsumer<List<NameValuePair>, List<Object>> handler) throws UnsupportedEncodingException {
         try {
             List output = new ArrayList();
@@ -176,7 +195,6 @@ public class RestServer {
             outputError(response, ex);
         }
     }
-    
 
     public void shutdown() {
         if (server != null) {
@@ -195,7 +213,7 @@ public class RestServer {
         HttpEntity responseObject = new StringEntity(gson.toJson(outputResponse));
         response.setEntity(responseObject);
     }
-    
+
     private void outputError(HttpResponse response, Exception ex) throws UnsupportedEncodingException {
         Map errorDetails = new HashMap();
         errorDetails.put("message", ex.getMessage());
@@ -213,12 +231,20 @@ public class RestServer {
         return str == null || str.trim().isEmpty();
     }
 
-    private int getRequiredInt(List<NameValuePair> params, String name) {
+    private int getInt(List<NameValuePair> params, String name, int defaultValue) {
         String str = getParamValue(params, name).orElse(null);
         if (isEmptyOrNull(str)) {
-            throw new IllegalArgumentException("Numeric parameter " + name + " is missing or invalid");
+            return defaultValue;
         }
         return Integer.parseInt(str);
+    }
+
+    private int getRequiredInt(List<NameValuePair> params, String name) {
+        int value = getInt(params, name, Integer.MIN_VALUE);
+        if (value == Integer.MIN_VALUE) {
+            throw new IllegalArgumentException("Numeric parameter " + name + " is missing or invalid");
+        }
+        return value;
     }
 
     private boolean getRequiredBoolean(List<NameValuePair> params, String name) {

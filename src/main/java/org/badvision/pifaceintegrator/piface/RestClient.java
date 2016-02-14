@@ -78,36 +78,43 @@ public class RestClient implements PifaceConnection {
         getListenersForPin(pin).add(listener);
     }
 
+    final ConcurrentHashMap<Integer, Integer> pwmOutputChanges = new ConcurrentHashMap<>();
+
     @Override
     public void setOutputState(int pin, boolean state) throws IOException {
-        try {
-            URI uri = generateUri(RestServer.SET_OUTPUT,
-                    RestServer.PARAM_PIN, String.valueOf(pin),
-                    RestServer.PARAM_STATE, String.valueOf(state));
-            RestResponse restResponse = getRestResponse(uri);
-            if (restResponse == null) {
-                throw new IOException("Bad response");
-            }
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
-            throw new IOException("Error executing request", ex);
-        }
+        setOutputPWM(pin, state ? 100 : 0);
     }
 
     @Override
     public void setOutputPWM(int pin, int value) throws IOException {
-        try {
-            URI uri = generateUri(RestServer.SET_OUTPUT_PWM,
-                    RestServer.PARAM_PIN, String.valueOf(pin),
-                    RestServer.PARAM_VALUE, String.valueOf(value));
-            RestResponse restResponse = getRestResponse(uri);
-            if (restResponse == null) {
-                throw new IOException("Bad response");
-            }
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
-            throw new IOException("Error executing request", ex);
+        synchronized (pwmOutputChanges) {
+            pwmOutputChanges.put(pin, value);
         }
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            List<String> params = new ArrayList<>();
+            synchronized (pwmOutputChanges) {
+                pwmOutputChanges.forEach((p, v) -> {
+                    params.add(RestServer.PARAM_PIN + p);
+                    params.add(String.valueOf(v));
+                });
+                pwmOutputChanges.clear();
+            }
+            if (params.isEmpty()) {
+                return;
+            }
+            try {
+                URI uri = generateUri(RestServer.SET_OUTPUT_PWM, (String[]) params.toArray(new String[0]));
+                RestResponse restResponse = getRestResponse(uri);
+            } catch (URISyntaxException | IOException ex) {
+                Logger.getLogger(RestClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }
 
     @Override
@@ -154,7 +161,9 @@ public class RestClient implements PifaceConnection {
             }
             builder.append(params[i]);
         }
-        return new URI("http://" + host + ":" + port + path + "?" + builder.toString());
+        String url = "http://" + host + ":" + port + path + "?" + builder.toString();
+        System.out.println(url);
+        return new URI(url);
     }
 
     private CloseableHttpClient getClient() {
@@ -163,7 +172,7 @@ public class RestClient implements PifaceConnection {
                 .setConnectionManagerShared(true)
                 .build();
     }
-    
+
     private RestResponse getRestResponse(URI uri) throws IOException {
         int retries = 3;
         RestResponse restResponse = null;
@@ -199,7 +208,8 @@ public class RestClient implements PifaceConnection {
                 JsonObject result = gson.fromJson(reader, JsonObject.class);
                 JsonArray list = result.get("response").getAsJsonArray();
 
-                Type collectionType = new TypeToken<Collection<RestResponse>>() {}.getType();
+                Type collectionType = new TypeToken<Collection<RestResponse>>() {
+                }.getType();
                 restResponse = gson.fromJson(list, collectionType);
             } catch (Throwable t) {
                 retries--;
